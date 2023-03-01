@@ -1,0 +1,213 @@
+
+const letterContainer = document.getElementById("letter-container");
+const optionsContainer = document.getElementById("options-container");
+const userInputSection = document.getElementById("user-input-section");
+const newGameContainer = document.getElementById("new-game-container");
+const newGameButton = document.getElementById("new-game-button");
+const canvas = document.getElementById("canvas");
+const resultText = document.getElementById("result-text");
+
+//Clique para jogar
+let options = {
+  Jogar: [
+    "Batata","Perdigao","Galinha","Comunistas","Prata","Uniao","Pronome","Qualidade","Marketing","Cidadania", "Xburguer","Queratina","Creatina"
+    
+  ],
+  
+};
+
+//contador
+let VitoriaCount = 0;
+let count = 0;
+
+let Palavra = "";
+
+//Botoes
+const displayOptions = () => {
+  optionsContainer.innerHTML += `<h3>JOGO DA FORCA</h3>`;
+  let buttonCon = document.createElement("div");
+  for (let value in options) {
+    buttonCon.innerHTML += `<button class="options" onclick="generatePalavra('${value}')">${value}</button>`;
+  }
+  optionsContainer.appendChild(buttonCon);
+};
+
+const blocker = () => {
+  let optionsButtons = document.querySelectorAll(".options");
+  let letterButtons = document.querySelectorAll(".letters");
+  optionsButtons.forEach((button) => {
+    button.disabled = true;
+  });
+  
+  letterButtons.forEach((button) => {
+    button.disabled.true;
+  });
+  newGameContainer.classList.remove("hide");
+};
+
+//Gerador da palavra
+const generatePalavra = (optionValue) => {
+  let optionsButtons = document.querySelectorAll(".options");
+
+  optionsButtons.forEach((button) => {
+    if (button.innerText.toLowerCase() === optionValue) {
+      button.classList.add("active");
+    }
+    button.disabled = true;
+  });
+
+  
+  letterContainer.classList.remove("hide");
+  userInputSection.innerText = "";
+
+  let optionArray = options[optionValue];
+  //Palavra aleatória
+  Palavra = optionArray[Math.floor(Math.random() * optionArray.length)];
+  Palavra = Palavra.toUpperCase();
+  let displayItem = Palavra.replace(/./g, '<span class="dashes">_</span>');
+
+ 
+  userInputSection.innerHTML = displayItem;
+};
+
+//Novo jogo
+const initializer = () => {
+  VitoriaCount = 0;
+  count = 0;
+  userInputSection.innerHTML = "";
+  optionsContainer.innerHTML = "";
+  letterContainer.classList.add("hide");
+  newGameContainer.classList.add("hide");
+  letterContainer.innerHTML = "";
+
+  //Letras
+  for (let i = 65; i < 91; i++) {
+    let button = document.createElement("button");
+    button.classList.add("letters");
+    button.innerText = String.fromCharCode(i);
+    button.addEventListener("click", () => {
+      let charArray = Palavra.split("");
+      let dashes = document.getElementsByClassName("dashes");
+      //if Marcar botão
+      if (charArray.includes(button.innerText)) {
+        charArray.forEach((char, index) => {
+          //if character in array is same as clicked button
+          if (char === button.innerText) {
+            //Preencher com letra
+            dashes[index].innerText = char;
+            //increment counter
+            VitoriaCount += 1;
+            //if VitoriaCount igual à palavras
+            if (VitoriaCount == charArray.length) {
+              resultText.innerHTML = `<h2 class='win-msg'>Vitória!</h2><p>A palavra era <span>${Palavra}</span></p>`;
+              
+              blocker();
+            }
+          }
+        });
+      } else {
+        //loss count
+        count += 1;
+        //Desenho
+        drawMan(count);
+        
+        if (count == 6) {
+          resultText.innerHTML = `<h2 class='lose-msg'>Derrota!</h2><p>A palavra era <span>${Palavra}</span></p>`;
+          blocker();
+        }
+      }
+      //Desligar botões já pressionados
+      button.disabled = true;
+    });
+    letterContainer.append(button);
+  }
+
+  displayOptions();
+  //Canvas
+  let { initialDrawing } = canvasCreator();
+  initialDrawing();
+};
+
+//Canvas
+const canvasCreator = () => {
+  let context = canvas.getContext("2d");
+  context.beginPath();
+  context.strokeStyle = "#000";
+  context.lineWidth = 2;
+
+  //Desenho das linhas
+  const drawLine = (fromX, fromY, toX, toY) => {
+    context.moveTo(fromX, fromY);
+    context.lineTo(toX, toY);
+    context.stroke();
+  };
+
+  const head = () => {
+    context.beginPath();
+    context.arc(70, 30, 10, 0, Math.PI * 2, true);
+    context.stroke();
+  };
+
+  const body = () => {
+    drawLine(70, 40, 70, 80);
+  };
+
+  const leftArm = () => {
+    drawLine(70, 50, 50, 70);
+  };
+
+  const rightArm = () => {
+    drawLine(70, 50, 90, 70);
+  };
+
+  const leftLeg = () => {
+    drawLine(70, 80, 50, 110);
+  };
+
+  const rightLeg = () => {
+    drawLine(70, 80, 90, 110);
+  };
+
+  
+  const initialDrawing = () => {
+    
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    drawLine(10, 130, 130, 130);
+    drawLine(10, 10, 10, 131);
+    drawLine(10, 10, 70, 10);
+    drawLine(70, 10, 70, 20);
+  };
+
+  return { initialDrawing, head, body, leftArm, rightArm, leftLeg, rightLeg };
+};
+
+//Switch case do boneco
+const drawMan = (count) => {
+  let { head, body, leftArm, rightArm, leftLeg, rightLeg } = canvasCreator();
+  switch (count) {
+    case 1:
+      head();
+      break;
+    case 2:
+      body();
+      break;
+    case 3:
+      leftArm();
+      break;
+    case 4:
+      rightArm();
+      break;
+    case 5:
+      leftLeg();
+      break;
+    case 6:
+      rightLeg();
+      break;
+    default:
+      break;
+  }
+};
+
+//Novo jogo
+newGameButton.addEventListener("click", initializer);
+window.onload = initializer;
