@@ -1,4 +1,3 @@
-
 const letterContainer = document.getElementById("letter-container");
 const optionsContainer = document.getElementById("options-container");
 const userInputSection = document.getElementById("user-input-section");
@@ -10,7 +9,7 @@ const resultText = document.getElementById("result-text");
 //Clique para jogar
 let options = {
   Jogar: [
-    "Batata","Perdigao","Galinha","Comunistas","Prata","Uniao","Pronome","Qualidade","Marketing","Cidadania", "Xburguer","Queratina","Creatina"
+    "Batata","Perdigao","Galinha","Comunistas","Prata","Uniao","Pronome","Qualidade","Marketing","Cidadania"
     
   ],
   
@@ -37,11 +36,15 @@ const blocker = () => {
   let letterButtons = document.querySelectorAll(".letters");
   optionsButtons.forEach((button) => {
     button.disabled = true;
-  });
+  }
+  
+  );
   
   letterButtons.forEach((button) => {
     button.disabled.true;
-  });
+  }
+  
+  );
   newGameContainer.classList.remove("hide");
 };
 
@@ -54,7 +57,8 @@ const generatePalavra = (optionValue) => {
       button.classList.add("active");
     }
     button.disabled = true;
-  });
+  }
+  );
 
   
   letterContainer.classList.remove("hide");
@@ -64,13 +68,13 @@ const generatePalavra = (optionValue) => {
   //Palavra aleatória
   Palavra = optionArray[Math.floor(Math.random() * optionArray.length)];
   Palavra = Palavra.toUpperCase();
-  let displayItem = Palavra.replace(/./g, '<span class="dashes">_</span>');
+  let displayItem = Palavra.replace(/./g, '<span class="espaco">_</span>');
 
  
   userInputSection.innerHTML = displayItem;
 };
 
-//Novo jogo
+//Novo jogo Clique
 const initializer = () => {
   VitoriaCount = 0;
   count = 0;
@@ -80,21 +84,21 @@ const initializer = () => {
   newGameContainer.classList.add("hide");
   letterContainer.innerHTML = "";
 
-  //Letras
+  //Letras ASCII 65 AO 91 UPPERCASE
   for (let i = 65; i < 91; i++) {
     let button = document.createElement("button");
     button.classList.add("letters");
     button.innerText = String.fromCharCode(i);
     button.addEventListener("click", () => {
       let charArray = Palavra.split("");
-      let dashes = document.getElementsByClassName("dashes");
+      let espaco = document.getElementsByClassName("espaco");
       //if Marcar botão
       if (charArray.includes(button.innerText)) {
         charArray.forEach((char, index) => {
           //if character in array is same as clicked button
           if (char === button.innerText) {
             //Preencher com letra
-            dashes[index].innerText = char;
+            espaco[index].innerText = char;
             //increment counter
             VitoriaCount += 1;
             //if VitoriaCount igual à palavras
@@ -104,12 +108,14 @@ const initializer = () => {
               blocker();
             }
           }
-        });
+        }
+        
+        );
       } else {
         //loss count
         count += 1;
         //Desenho
-        drawMan(count);
+        boneco(count);
         
         if (count == 6) {
           resultText.innerHTML = `<h2 class='lose-msg'>Derrota!</h2><p>A palavra era <span>${Palavra}</span></p>`;
@@ -118,7 +124,9 @@ const initializer = () => {
       }
       //Desligar botões já pressionados
       button.disabled = true;
-    });
+    }
+    
+    );
     letterContainer.append(button);
   }
 
@@ -181,8 +189,8 @@ const canvasCreator = () => {
   return { initialDrawing, head, body, leftArm, rightArm, leftLeg, rightLeg };
 };
 
-//Switch case do boneco
-const drawMan = (count) => {
+//Desenho do boneco
+const boneco = (count) => {
   let { head, body, leftArm, rightArm, leftLeg, rightLeg } = canvasCreator();
   switch (count) {
     case 1:
